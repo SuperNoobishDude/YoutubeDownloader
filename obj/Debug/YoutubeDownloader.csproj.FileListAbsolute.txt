@@ -1,0 +1,12 @@
+c:\users\erni\documents\visual studio 2013\Projects\YoutubeDownloader\YoutubeDownloader\bin\Debug\YoutubeDownloader.exe.config
+c:\users\erni\documents\visual studio 2013\Projects\YoutubeDownloader\YoutubeDownloader\bin\Debug\YoutubeDownloader.exe
+c:\users\erni\documents\visual studio 2013\Projects\YoutubeDownloader\YoutubeDownloader\bin\Debug\YoutubeDownloader.pdb
+c:\users\erni\documents\visual studio 2013\Projects\YoutubeDownloader\YoutubeDownloader\bin\Debug\YoutubeExtractor.dll
+c:\users\erni\documents\visual studio 2013\Projects\YoutubeDownloader\YoutubeDownloader\bin\Debug\Newtonsoft.Json.dll
+c:\users\erni\documents\visual studio 2013\Projects\YoutubeDownloader\YoutubeDownloader\bin\Debug\YoutubeExtractor.pdb
+c:\users\erni\documents\visual studio 2013\Projects\YoutubeDownloader\YoutubeDownloader\obj\Debug\YoutubeDownloader.csprojResolveAssemblyReference.cache
+c:\users\erni\documents\visual studio 2013\Projects\YoutubeDownloader\YoutubeDownloader\obj\Debug\YoutubeDownloader.Form1.resources
+c:\users\erni\documents\visual studio 2013\Projects\YoutubeDownloader\YoutubeDownloader\obj\Debug\YoutubeDownloader.Properties.Resources.resources
+c:\users\erni\documents\visual studio 2013\Projects\YoutubeDownloader\YoutubeDownloader\obj\Debug\YoutubeDownloader.csproj.GenerateResource.Cache
+c:\users\erni\documents\visual studio 2013\Projects\YoutubeDownloader\YoutubeDownloader\obj\Debug\YoutubeDownloader.exe
+c:\users\erni\documents\visual studio 2013\Projects\YoutubeDownloader\YoutubeDownloader\obj\Debug\YoutubeDownloader.pdb
