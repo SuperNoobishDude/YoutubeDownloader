@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Windows.Forms;
 using YoutubeExtractor;
 using System.Text.RegularExpressions;
@@ -31,11 +26,20 @@ namespace YoutubeDownloader
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyVideos),
                 RemoveIllegalPathCharacters(video.Title) + video.VideoExtension));
 
-            videoDownloader.DownloadProgressChanged += (sender, args) => downloadProgressBar.Value = (int)args.ProgressPercentage;
 
-
-            videoDownloader.Execute(); //TODO: make it run on another thread so it doesn't hang the program
+            Thread thread = new Thread(() => startDownload(videoDownloader));
+            thread.Start();
         }
+
+        private void startDownload(VideoDownloader obj)
+        {
+            obj.DownloadProgressChanged += (sender, args) => downloadProgressBar.Invoke((MethodInvoker)delegate
+            {
+                downloadProgressBar.Value = (int)args.ProgressPercentage;
+            });
+            obj.Execute(); //TODO: test the method
+        }
+
 
         private static string RemoveIllegalPathCharacters(string path)
         {
