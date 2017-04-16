@@ -2,14 +2,18 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Forms;
+using System.Linq;
 using YoutubeExtractor;
 using System.Text.RegularExpressions;
 using System.IO;
+
 
 namespace YoutubeDownloader
 {
     public partial class Form1 : Form
     {
+        private List<VideoInfo> videoInfos;
+
         public Form1()
         {
             InitializeComponent();
@@ -17,29 +21,62 @@ namespace YoutubeDownloader
 
         private void videoButton_Click(object send, EventArgs e)
         {
-            VideoInfo video = (VideoInfo)listBox1.SelectedItem; //TODO: make a merger for video only video items
-            
+            VideoInfo video = videoInfos[listBox1.SelectedIndex]; //TODO: Perhaps try not to depend on the selectedindex.
+
+
+            //TODO: Check IF the selected video already has audio ELSE download audio and video and contatenate
+
             if (video.RequiresDecryption)
                 DownloadUrlResolver.DecryptDownloadUrl(video);
 
-            var videoDownloader = new VideoDownloader(video,
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyVideos),
-                RemoveIllegalPathCharacters(video.Title) + video.VideoExtension));
-
-
-            Thread thread = new Thread(() => startDownload(videoDownloader));
-            thread.Start();
-        }
-
-        private void startDownload(VideoDownloader obj)
-        {
-            obj.DownloadProgressChanged += (sender, args) => downloadProgressBar.Invoke((MethodInvoker)delegate
+            if (video.AudioType == AudioType.Unknown)
             {
-                downloadProgressBar.Value = (int)args.ProgressPercentage;
-            });
-            obj.Execute(); //TODO: test the method
+                var videoDownloader = new VideoDownloader(video, 
+                    Path.Combine(Path.GetDirectoryName(Application.ExecutablePath) 
+                    + @"\video" + video.VideoExtension));
+
+                VideoInfo audio = videoInfos[16];
+
+                var audioDownloader = new AudioDownloader(video, 
+                    Path.Combine(Path.GetDirectoryName(Application.ExecutablePath) 
+                    + @"\audio" + video.AudioExtension));
+
+                downloadProgressBar.Maximum = 200;
+                videoDownloader.DownloadProgressChanged += videoDownloader_DownloadProgressChanged;
+                audioDownloader.DownloadProgressChanged += videoDownloader_DownloadProgressChanged;
+
+                Thread videoThread = new Thread(() => startDownload(videoDownloader));
+                Thread audioThread = new Thread(() => startDownload(audioDownloader));
+                videoThread.Start();
+                audioThread.Start();
+
+            }
+            else
+            {
+                var videoDownloader = new VideoDownloader(video,
+                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyVideos),
+                    RemoveIllegalPathCharacters(video.Title) + video.VideoExtension));
+
+                downloadProgressBar.Maximum = 100;
+                videoDownloader.DownloadProgressChanged += videoDownloader_DownloadProgressChanged;
+
+                Thread thread = new Thread(() => startDownload(videoDownloader));
+                thread.Start();
+            }
         }
 
+        private void videoDownloader_DownloadProgressChanged(object sender, ProgressEventArgs e)
+        {
+            downloadProgressBar.Invoke((MethodInvoker)delegate
+            {
+                downloadProgressBar.Value = (int)e.ProgressPercentage;
+            });
+        }
+
+        private void startDownload(Downloader obj)
+        {
+            obj.Execute();
+        }
 
         private static string RemoveIllegalPathCharacters(string path)
         {
@@ -52,9 +89,16 @@ namespace YoutubeDownloader
         {
             string link = videoURL.Text;
 
-            IEnumerable<VideoInfo> videoInfos = DownloadUrlResolver.GetDownloadUrls(link, false);
+            videoInfos = DownloadUrlResolver.GetDownloadUrls(link, false).ToList();
+            List<string> dataSource = new List<string>();
 
-            listBox1.DataSource = videoInfos; //TODO: Only show filetype, bitrate and resolution
+            foreach (var info in videoInfos)
+            {
+                if (info.Resolution != 0)
+                    dataSource.Add(string.Format("TITLE :{0}, VIDEO: {1}, RESOLUTION: {2}, AUDIO {3}", info.Title, info.VideoExtension, info.Resolution, info.AudioType));
+            }
+
+            listBox1.DataSource = dataSource;
         }
     }
 }
